@@ -1,7 +1,10 @@
 #include "../inc/parse_utils.hpp"
 #include "../inc/builtins.hpp"
 
+
 void replace_vars(std::vector<std::string> &command) {
+//     TODO: hz czy tut ale $()
+//     треба подумати як працювати в випадку вкладень типу $($var) czy $(echo $(cat $var))
     std::vector<std::string> command_vars;
     std::string var;
     char *tmp = nullptr;
@@ -30,17 +33,19 @@ void replace_vars(std::vector<std::string> &command) {
     }
 }
 
-void split(std::string &source, std::vector<std::string> &destination) {
+command split(std::string &source) {
+    // TODO: check < > & .
+    std::vector<std::string> destination;
     boost::regex exp("[^ ]*\"([^\"]*)\"[^ ]*|[^\\s]+");
     boost::smatch res;
-    boost::sregex_iterator iter1(source.begin(), source.end(), exp);
-    boost::sregex_iterator iter2;
+    boost::sregex_iterator iter1(source.begin(), source.end(), exp), iter2;
     std::string tmp;
     for (; iter1 != iter2; ++iter1) {
         tmp = iter1->str();
         boost::replace_all(tmp, "\"", "");
         destination.push_back(tmp);
     }
+    return command(destination);
 }
 
 void
