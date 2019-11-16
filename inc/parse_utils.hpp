@@ -13,7 +13,8 @@
 
 void replace_vars(std::vector<std::string>& command);
 
-command split(std::string &source);
+void split(std::string &source, std::vector<std::string> &destination);
+
 void replace_wildcard(std::vector<std::string>& command, std::string& full_path,  std::string& dir, std::string& filename);
 
 int parse_variables(std::vector<std::string>& command, custom_environ &environ_);

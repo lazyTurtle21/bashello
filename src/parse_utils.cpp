@@ -33,9 +33,7 @@ void replace_vars(std::vector<std::string> &command) {
     }
 }
 
-command split(std::string &source) {
-    // TODO: check < > & .
-    std::vector<std::string> destination;
+void split(std::string &source, std::vector<std::string> &destination) {
     boost::regex exp("[^ ]*\"([^\"]*)\"[^ ]*|[^\\s]+");
     boost::smatch res;
     boost::sregex_iterator iter1(source.begin(), source.end(), exp), iter2;
@@ -45,7 +43,6 @@ command split(std::string &source) {
         boost::replace_all(tmp, "\"", "");
         destination.push_back(tmp);
     }
-    return command(destination);
 }
 
 void

@@ -3,10 +3,10 @@
 
 
 command_line::~command_line() {
-    if (buf != nullptr) free(buf);
+    delete[]buf;
 }
 
 
 arguments_container::~arguments_container() {
-    if (buf != nullptr) free(buf);
+    delete[] buf;
 }
