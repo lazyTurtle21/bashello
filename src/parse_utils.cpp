@@ -14,7 +14,8 @@ void replace_vars(std::vector<std::string> &command) {
         bool write_var = false;
         for (int j = 0; j < cmd.size(); ++j) {
             if (write_var) {
-                if (cmd[j] == ')' || cmd[j] == '(' || !isalpha(cmd[j])) {
+                // zabrala duzhki bo v teorii ih ne maye buty vzhe tut
+                if (!isalpha(cmd[j])) {
                     command_vars.push_back(var);
                     var.clear();
                     write_var = false;

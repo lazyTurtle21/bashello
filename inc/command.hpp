@@ -25,6 +25,7 @@ public:
     int execute_command(builtins_map &builtins);
 
 private:
+
     size_t stdin_ = STDIN_FILENO, stdout_ = STDOUT_FILENO, stderr_ = STDERR_FILENO;
     custom_environ &environ;
 };
