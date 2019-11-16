@@ -51,7 +51,10 @@ int main(int argc, char *argv[], char *envp[]) {
         if (command_.empty()) continue;
 
         replace_wildcard(command_, full_path, dir, filename);
-        command c(command_, environ_);
+
+// TODO napisat' vector z descriptoramy imenamy
+        std::vector<std::string> v{"f.txt", "", ""};
+        command c(command_, v, environ_);
         status = c.execute_command(builtins);
 
     }

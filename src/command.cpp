@@ -14,19 +14,22 @@
 
 void execute(std::vector<std::string> &command, arguments_container &arguments, custom_environ &environ_, int &status);
 
-command::command(std::vector<std::string> args, custom_environ &env)
+command::command(std::vector<std::string> args, std::vector<std::string> &desc, custom_environ &env)
         : args(std::move(args)),
-          environ(env),
-          stdin_(stdin_),
-          stdout_(stdout_),
-          stderr_(stderr_) {}
+          environ(env) {
+    if (!desc[0].empty())
+        stdin_ = open(desc[0].c_str(), O_TRUNC | O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    if (!desc[1].empty())
+        stdout_ = open(desc[1].c_str(), O_TRUNC | O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    if (!desc[2].empty())
+        stderr_ = open(desc[2].c_str(), O_TRUNC | O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+}
 
 command::~command() {
-// Ya sze don't know czy to good destructor (ne norm zakrywaye progu)
-// TODO: norm destructor hocza hz czy treba ne default
-    if (stdin_ != 0) close(stdin_);
-    if (stdout_ != 1) close(stdout_);
-    if (stderr_ != 2) close(stderr_);
+
+    if (stdin_ != STDIN_FILENO) close(stdin_);
+    if (stdout_ != STDOUT_FILENO) close(stdout_);
+    if (stderr_ != STDERR_FILENO) close(stderr_);
 
 }
 
