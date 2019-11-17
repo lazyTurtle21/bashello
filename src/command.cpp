@@ -10,11 +10,15 @@
 #define ERR_COLOR "\e[31m"
 #define RESET "\u001b[0m"
 
-command::command(std::vector<std::string> args, std::vector<std::string> &desc, custom_environ &env)
+command::command(std::vector<std::string> args, std::vector<std::string> &desc, custom_environ &env, size_t background)
         : args(std::move(args)),
-          environ(env) {
-    // TODO: pomylka maye buty yaksho nema faila a ne create
+          environ(env), background(background) {
+    if (background) {
+        background = open("/dev/null", O_WRONLY);
+        stdout_ = background, stderr_ = background;
+    }
     if (!desc[0].empty())
+        // TODO: pomylka maye buty yaksho nema faila a ne create
         stdin_ = open(desc[0].c_str(), O_TRUNC | O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     if (!desc[1].empty())
         stdout_ = open(desc[1].c_str(), O_TRUNC | O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
@@ -26,6 +30,7 @@ command::~command() {
     if (stdin_ != STDIN_FILENO) close(stdin_);
     if (stdout_ != STDOUT_FILENO) close(stdout_);
     if (stderr_ != STDERR_FILENO) close(stderr_);
+    if (background) close(background);
 }
 
 
@@ -37,9 +42,8 @@ int command::execute_command(builtins_map &builtins) {
         dup2(stdout_, STDOUT_FILENO);
         status = builtins[args[0]](args);
         dup2(stdout_copy, STDOUT_FILENO);
-        if (status) {
+        if (status)
             std::cerr << ERR_COLOR << args[0] << ": " << strerror(status) << RESET << '\n';
-        }
         return status;
     }
     arguments.buf = new const char *[args.size() + 1];   // extra room for sentinel
@@ -56,14 +60,14 @@ int command::execute_command(builtins_map &builtins) {
         if (stdin_ != STDIN_FILENO) dup2(stdin_, STDIN_FILENO);
         if (stdout_ != STDOUT_FILENO) dup2(stdout_, STDOUT_FILENO);
         if (stderr_ != STDERR_FILENO) dup2(stderr_, STDERR_FILENO);
+
         int ret = execvpe(args[0].c_str(), (char **) arguments.buf, environ.c_arr());
-        if (ret == -1 && errno == ENOENT) {     // no such file or directory
+
+        if (ret == -1 && errno == ENOENT)  // no such file or directory
             std::cerr << ERR_COLOR << args[0] << ": command not found" << RESET << '\n';
-        }
+
         _exit(0);
-    } else {
-        // IFKA na waitpid
-        (void) waitpid(pid, &status, 0);
-    }
+    } else if (background) return 0;
+    else (void) waitpid(pid, &status, 0);
     return status;
 }

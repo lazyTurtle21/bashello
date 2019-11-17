@@ -18,14 +18,15 @@ class command {
 public:
     std::vector<std::string> args;
 
-    explicit command(std::vector<std::string> args, std::vector<std::string> &desc, custom_environ &env);
+    explicit command(std::vector<std::string> args, std::vector<std::string> &desc,
+                     custom_environ &env, size_t background = 0);
 
     ~command();
 
     int execute_command(builtins_map &builtins);
 
 private:
-
+    size_t background;
     size_t stdin_ = STDIN_FILENO, stdout_ = STDOUT_FILENO, stderr_ = STDERR_FILENO;
     custom_environ &environ;
 };

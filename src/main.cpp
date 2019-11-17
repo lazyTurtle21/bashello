@@ -53,9 +53,12 @@ int main(int argc, char *argv[], char *envp[]) {
         replace_wildcard(command_, full_path, dir, filename);
 
 // TODO napisat' vector z descriptoramy imenamy
-        std::vector<std::string> v{"", "file.txt", ""};
+        std::vector<std::string> v{"", "", ""};
+//        std::vector<std::string> com {"grep", "e"};
+        //pass 1 as 4 parameter if background mode
         command c(command_, v, environ_);
         status = c.execute_command(builtins);
+//        int p[2];
 
     }
 
