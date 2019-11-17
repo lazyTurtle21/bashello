@@ -34,7 +34,7 @@ command::~command() {
 }
 
 
-int command::execute_command(builtins_map &builtins) {
+int command::execute_command(builtins_map &builtins, const int &close_fd) {
     arguments_container arguments;
     int status;
     if (builtins.find(args[0]) != builtins.end()) {
@@ -60,7 +60,7 @@ int command::execute_command(builtins_map &builtins) {
         if (stdin_ != STDIN_FILENO) dup2(stdin_, STDIN_FILENO);
         if (stdout_ != STDOUT_FILENO) dup2(stdout_, STDOUT_FILENO);
         if (stderr_ != STDERR_FILENO) dup2(stderr_, STDERR_FILENO);
-
+        if (close_fd != -1) close(close_fd);
         int ret = execvpe(args[0].c_str(), (char **) arguments.buf, environ.c_arr());
 
         if (ret == -1 && errno == ENOENT)  // no such file or directory
@@ -70,4 +70,19 @@ int command::execute_command(builtins_map &builtins) {
     } else if (background) return 0;
     else (void) waitpid(pid, &status, 0);
     return status;
+}
+
+void command::set_stdin(int &desc) {
+    if (stdin_ != STDIN_FILENO) close(stdin_);
+    stdin_ = desc;
+}
+
+void command::set_stdout(int &desc) {
+    if (stdout_ != STDOUT_FILENO) close(stdout_);
+    stdout_ = desc;
+}
+
+void command::set_stderr(int &desc) {
+    if (stderr_ != STDERR_FILENO) close(stderr_);
+    stderr_ = desc;
 }

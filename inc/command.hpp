@@ -23,7 +23,13 @@ public:
 
     ~command();
 
-    int execute_command(builtins_map &builtins);
+    int execute_command(builtins_map &builtins, const int &close_fd = -1);
+
+    void set_stdin(int &desc);
+
+    void set_stdout(int &desc);
+
+    void set_stderr(int &desc);
 
 private:
     size_t background;
