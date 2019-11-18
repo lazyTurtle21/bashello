@@ -88,29 +88,29 @@ replace_wildcard(std::vector<std::string> &command) {
 
 
 
-int parse_variables(std::vector<std::string>& command, custom_environ &environ_){
-    size_t index = 0;
-    size_t size = command.size();
+int parse_variables(std::vector<std::string> &command, custom_environ &environ_) {
     int res = 0;
     std::string name, value;
-    while (index < size) {
-        size_t found = command[index].find('=');
-        if (found == std::string::npos){
-            break;
-        }
-        name = command[index].substr(0, found);
-        value = command[index].substr(found + 1);
-        res = setenv(name.c_str(), value.c_str(), 1);
-        if (res == -1){
-            return errno;
-        }
-        index++;
+    size_t found = command[0].find('=');
+    if (found == std::string::npos)
+        return 0;
+    if (command.empty())
+        return 0;
+    name = command[0].substr(0, found);
+    value = command[0].substr(found + 1) + "\n";
+    if (command.size() > 2)
+    {
+        for (auto i = 1; i < command.size(); ++i) {
+//            std::cout<< value;
+            value += command[i] + '\n';
+        }}
+    res = setenv(name.c_str(), value.c_str(), 1);
+    if (res == -1) {
+        return errno;
     }
-    while(index--) {
-        command.erase(command.begin());
-    }
-    return 0;
+    command.clear();
 
+    return 0;
 }
 
 std::string remove_leading_ending_spaces(const std::string& str){
@@ -147,7 +147,12 @@ std::pair<std::string, std::vector<std::string>> get_files_for_redirect(std::str
             if(cmd[redirect_signs[j+1]-1] == '0' || cmd[redirect_signs[j+1]-1] == '1' || cmd[redirect_signs[j+1]-1] == '2') --end;
             file_name = cmd.substr(ind + 1, end - ind - 1);
         }
-        redirect_files[desc] = remove_leading_ending_spaces(file_name);
+        std::string without_spaces = remove_leading_ending_spaces(file_name);
+        std::string without_quotes;
+        for (char ch : without_spaces) {
+            if (ch != '"') without_quotes.push_back(ch);
+        }
+        redirect_files[desc] = without_quotes;
     }
     std::string command = remove_leading_ending_spaces(cmd.substr(0, command_end));
     std::pair<std::string, std::vector<std::string>> new_command = std::make_pair(command, redirect_files);

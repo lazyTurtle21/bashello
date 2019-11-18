@@ -44,14 +44,12 @@ int prepare_and_execute(std::string string_args, custom_environ &environ_, built
         replace_vars(c);
 
         scripts = get_script_vars(c);
-        std::cout << scripts.size() << '\n';
 
         for (auto &s: scripts) {
-//            std::cout << "'" << s  <<"'" << '\n';
-            auto dd = magic_transform(s, status, environ_, builtins);
-//            std::cout << dd << '\n';
-            boost::replace_first(c, "$(" + s + ")", dd);
+            replaced = magic_transform(s, status, environ_, builtins);
+            boost::replace_first(c, "$(" + s + ")", replaced);
         }
+
         if (c.find('<') != std::string::npos || c.find('>') != std::string::npos) {
             redirect_files = get_files_for_redirect(c);
             split(redirect_files.first, to_redirect);
@@ -66,6 +64,7 @@ int prepare_and_execute(std::string string_args, custom_environ &environ_, built
         }
 
         replace_wildcard(to_redirect);
+        if (to_redirect.empty()) continue;
         commands.emplace_back(to_redirect,
                               redirect_files.second.empty() ? default_desc : redirect_files.second, environ_);
     }
