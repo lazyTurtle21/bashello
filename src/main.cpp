@@ -50,10 +50,6 @@ int main(int argc, char *argv[], char *envp[]) {
     if(argc == 2){
         std::string file{argv[1]};
         status = execute_file(file, environ_, status, builtins);
-        if (status){
-            std::cerr << ERR_COLOR << strerror(status) << RESET << '\n';
-
-        }
         return status;
     }
 

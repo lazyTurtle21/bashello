@@ -43,7 +43,7 @@ int command::execute_command(builtins_map &builtins, const int &close_fd) {
         status = builtins[args[0]](args);
         dup2(stdout_copy, STDOUT_FILENO);
         if (status)
-            std::cerr << ERR_COLOR << args[0] << ": " << strerror(status) << RESET << '\n';
+            std::cerr << ERR_COLOR << strerror(status) << RESET << '\n';
         return status;
     }
     arguments.buf = new const char *[args.size() + 1];   // extra room for sentinel

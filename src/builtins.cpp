@@ -162,6 +162,7 @@ int prepare_and_execute(std::string string_args, custom_environ &environ_, built
 //        а якщо не довший то можна просто робити екзекют
 //    status = pipe_exec(commands, environ_, builtins);
     status = c.execute_command(builtins);
+
     return status;
 }
 
@@ -172,8 +173,8 @@ int execute_file(std::string &filename, custom_environ &environ_, int &status, b
     std::ifstream file(filename);
 
     if (!file.is_open()) {
-        errno = ENOENT;
-        return errno;
+        status = ENOENT;
+        return status;
     }
     std::string line, substr;
     while (getline(file, line)) {
@@ -188,7 +189,6 @@ int execute_file(std::string &filename, custom_environ &environ_, int &status, b
                     (substr.find(single_quote) != std::string::npos &&
                      line.find(single_quote, found) != std::string::npos)
             )) {
-
                 found = line.find(comment, found + 1);
                 continue;
             }
