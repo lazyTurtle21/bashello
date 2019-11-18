@@ -47,23 +47,27 @@ int main(int argc, char *argv[], char *envp[]) {
     builtins_map builtins = get_function(current_path, environ_, status);
 
 
-    if(argc == 2){
-        std::string file{argv[1]};
-        status = execute_file(file, environ_, status, builtins);
-        if (status){
-            std::cerr << ERR_COLOR << strerror(status) << RESET << '\n';
+    // TODO: use this beautiful function
+    std::string input = "ls -l";
+    std::string output = magic_transform(input, status, environ_, builtins);
+    std::cout << output;
 
-        }
-        return status;
-    }
+//    if(argc == 2){
+//        std::string file{argv[1]};
+//        status = execute_file(file, environ_, status, builtins);
+//        if (status){
+//            std::cerr << ERR_COLOR << strerror(status) << RESET << '\n';
+//        }
+//        return status;
+//    }
 
-    while ((cmd_line.buf = readline((PATH_COLOR + current_path + RESET + DOLLAR + "$ " + RESET).c_str())) != nullptr) {
-        if (strlen(cmd_line.buf) > 0) add_history(cmd_line.buf);
-
-        string_args = cmd_line.buf;
-        std::vector<std::string> command_;
-        status = prepare_and_execute(string_args, environ_, builtins);
-    }
+//    while ((cmd_line.buf = readline((PATH_COLOR + current_path + RESET + DOLLAR + "$ " + RESET).c_str())) != nullptr) {
+//        if (strlen(cmd_line.buf) > 0) add_history(cmd_line.buf);
+//
+//        string_args = cmd_line.buf;
+//        std::vector<std::string> command_;
+//        status = prepare_and_execute(string_args, environ_, builtins);
+//    }
 
     return 0;
 }

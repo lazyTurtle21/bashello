@@ -128,7 +128,17 @@ int merrno(std::vector<std::string> &args, int &status) {
     return E2BIG;  // argument list too big = 7
 }
 
-int prepare_and_execute(std::string string_args, custom_environ &environ_, builtins_map &builtins) {
+std::string magic_transform(std::string input, int &status, custom_environ &environ_, builtins_map &builtins) {
+    int p[2];
+    while (pipe(p) == -1) {}
+    status = prepare_and_execute(input, environ_, builtins, p[1], p[0]);
+    char inbuf[10000];
+    read(p[0], inbuf, 10000);
+    return inbuf;
+}
+
+int prepare_and_execute(std::string string_args, custom_environ &environ_, builtins_map &builtins, int pipe_out,
+                        int pipe_in) {
     std::string full_path, dir;
 
     std::vector<std::string> command_;
@@ -153,15 +163,21 @@ int prepare_and_execute(std::string string_args, custom_environ &environ_, built
 
     //test pipe
     command c(command_, v, environ_);
-    command c1(com, v, environ_);
-    command c2(com1, v, environ_);
+    if (pipe_out != -1) {
+        c.set_stdout(pipe_out);
+        status = c.execute_command(builtins, pipe_in);
+        close(pipe_out);
+    }
 
-    std::vector<command> commands{c, c1, c2};
+//    command c1(com, v, environ_);
+//    command c2(com1, v, environ_);
+//
+//    std::vector<command> commands{c, c1, c2};
 
-//        теоретично має бути так шо якщо там є пайп то вектор буде довним за 2, тоді викликаємо пайп
-//        а якщо не довший то можна просто робити екзекют
+//     теоретично має бути так шо якщо там є пайп то вектор буде довним за 2, тоді викликаємо пайп
+//     а якщо не довший то можна просто робити екзекют
 //    status = pipe_exec(commands, environ_, builtins);
-    status = c.execute_command(builtins);
+//    status = c.execute_command(builtins);
     return status;
 }
 

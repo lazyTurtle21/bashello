@@ -18,12 +18,13 @@ command::command(std::vector<std::string> args, std::vector<std::string> &desc, 
         stdout_ = background, stderr_ = background;
     }
     if (!desc[0].empty())
-        // TODO: pomylka maye buty yaksho nema faila a ne create
-        stdin_ = open(desc[0].c_str(), O_TRUNC | O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-    if (!desc[1].empty())
+        stdin_ = open(desc[0].c_str(), O_TRUNC | O_RDWR, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    if (!desc[1].empty() && desc[1] != "2")
         stdout_ = open(desc[1].c_str(), O_TRUNC | O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-    if (!desc[2].empty())
+    if (!desc[2].empty() && desc[2] != "1")
         stderr_ = open(desc[2].c_str(), O_TRUNC | O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    if (desc[1] == "2") stdout_ = stderr_;
+    if (desc[2] == "1") stderr_ = stdout_;
 }
 
 command::~command() {
