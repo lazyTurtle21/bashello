@@ -47,7 +47,8 @@ void split(std::string &source, std::vector<std::string> &destination) {
 }
 
 void
-replace_wildcard(std::vector<std::string> &command, std::string &full_path, std::string &dir, std::string &filename) {
+replace_wildcard(std::vector<std::string> &command, std::string &full_path, std::string &dir) {
+    std::string filename;
     for (int u = 1; u < command.size(); ++u) {
         try {
             full_path = boost::filesystem::absolute(command[u]).string();
