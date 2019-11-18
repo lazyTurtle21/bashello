@@ -168,16 +168,19 @@ int prepare_and_execute(std::string string_args, custom_environ &environ_, built
         status = c.execute_command(builtins, pipe_in);
         close(pipe_out);
     }
-
+    else
+        status = c.execute_command(builtins);
 //    command c1(com, v, environ_);
 //    command c2(com1, v, environ_);
 //
 //    std::vector<command> commands{c, c1, c2};
 
-//     теоретично має бути так шо якщо там є пайп то вектор буде довним за 2, тоді викликаємо пайп
-//     а якщо не довший то можна просто робити екзекют
+//        теоретично має бути так шо якщо там є пайп то вектор буде довним за 2, тоді викликаємо пайп
+//        а якщо не довший то можна просто робити екзекют
 //    status = pipe_exec(commands, environ_, builtins);
-//    status = c.execute_command(builtins);
+
+
+
     return status;
 }
 
@@ -188,8 +191,8 @@ int execute_file(std::string &filename, custom_environ &environ_, int &status, b
     std::ifstream file(filename);
 
     if (!file.is_open()) {
-        errno = ENOENT;
-        return errno;
+        status = ENOENT;
+        return status;
     }
     std::string line, substr;
     while (getline(file, line)) {

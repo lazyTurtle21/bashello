@@ -47,7 +47,6 @@ int main(int argc, char *argv[], char *envp[]) {
     builtins_map builtins = get_function(current_path, environ_, status);
 
 
-    // TODO: use this beautiful function
     std::string input = "ls -l";
     std::string output = magic_transform(input, status, environ_, builtins);
     std::cout << output;
@@ -55,9 +54,6 @@ int main(int argc, char *argv[], char *envp[]) {
 //    if(argc == 2){
 //        std::string file{argv[1]};
 //        status = execute_file(file, environ_, status, builtins);
-//        if (status){
-//            std::cerr << ERR_COLOR << strerror(status) << RESET << '\n';
-//        }
 //        return status;
 //    }
 
