@@ -18,8 +18,7 @@ class command {
 public:
     std::vector<std::string> args;
 
-    explicit command(std::vector<std::string> args, std::vector<std::string> &desc,
-                     custom_environ &env, size_t background = 0);
+    explicit command(std::vector<std::string> args_, std::vector<std::string> &desc, custom_environ &env);
 
     ~command();
 

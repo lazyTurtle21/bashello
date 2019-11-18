@@ -10,9 +10,19 @@
 #define ERR_COLOR "\e[31m"
 #define RESET "\u001b[0m"
 
-command::command(std::vector<std::string> args, std::vector<std::string> &desc, custom_environ &env, size_t background)
-        : args(std::move(args)),
-          environ(env), background(background) {
+
+size_t background_mode(std::vector<std::string>& command){
+    if (!command.empty() && command.back() == "&"){
+        command.pop_back();
+        return 1;
+    }
+    return 0;
+}
+
+command::command(std::vector<std::string> args_, std::vector<std::string> &desc, custom_environ &env)
+        : args(std::move(args_)),
+          environ(env){
+    background = background_mode(args);
     if (background) {
         background = open("/dev/null", O_WRONLY);
         stdout_ = background, stderr_ = background;

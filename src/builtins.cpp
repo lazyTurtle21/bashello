@@ -13,6 +13,7 @@
 #include "../inc/custom_environ.hpp"
 #include "../inc/buf_containers.hpp"
 #include "../inc/parse_utils.hpp"
+#include "../inc/execution.hpp"
 
 
 int help_opts(std::vector<std::string> &command, const std::string &message) {
@@ -128,103 +129,6 @@ int merrno(std::vector<std::string> &args, int &status) {
     return E2BIG;  // argument list too big = 7
 }
 
-std::string magic_transform(std::string input, int &status, custom_environ &environ_, builtins_map &builtins) {
-    int p[2];
-    while (pipe(p) == -1) {}
-    status = prepare_and_execute(input, environ_, builtins, p[1], p[0]);
-    char inbuf[10000];
-    read(p[0], inbuf, 10000);
-    return inbuf;
-}
-
-int prepare_and_execute(std::string string_args, custom_environ &environ_, builtins_map &builtins, int pipe_out,
-                        int pipe_in) {
-    std::string full_path, dir;
-
-    std::vector<std::string> command_;
-
-    split(string_args, command_);
-    int status = 0;
-
-    replace_vars(command_);
-    status = parse_variables(command_, environ_);
-    if (status) {
-        std::cerr << ERR_COLOR << "error while creating a new variable: " << strerror(status) << RESET << '\n';
-        return status;
-    }
-    if (command_.empty()) return 0;
-
-    replace_wildcard(command_, full_path, dir);
-
-    std::vector<std::string> v{"", "", ""};
-    std::vector<std::string> com{"grep", "e"};
-    std::vector<std::string> com1{"grep", "b"};
-    //pass 1 as 4 parameter if background mode
-
-    //test pipe
-    command c(command_, v, environ_);
-    if (pipe_out != -1) {
-        c.set_stdout(pipe_out);
-        status = c.execute_command(builtins, pipe_in);
-        close(pipe_out);
-    }
-    else
-        status = c.execute_command(builtins);
-//    command c1(com, v, environ_);
-//    command c2(com1, v, environ_);
-//
-//    std::vector<command> commands{c, c1, c2};
-
-//        теоретично має бути так шо якщо там є пайп то вектор буде довним за 2, тоді викликаємо пайп
-//        а якщо не довший то можна просто робити екзекют
-//    status = pipe_exec(commands, environ_, builtins);
-
-
-
-    return status;
-}
-
-
-int execute_file(std::string &filename, custom_environ &environ_, int &status, builtins_map &builtins) {
-    char comment{'#'}, double_quote{'"'}, single_quote{'\''};
-
-    std::ifstream file(filename);
-
-    if (!file.is_open()) {
-        status = ENOENT;
-        return status;
-    }
-    std::string line, substr;
-    while (getline(file, line)) {
-        std::size_t found = line.find(comment);
-
-        while (found != std::string::npos) {
-            substr = line.substr(0, found);
-            if ((
-                    (substr.find(double_quote) != std::string::npos &&
-                     line.find(double_quote, found) != std::string::npos)
-                    ||
-                    (substr.find(single_quote) != std::string::npos &&
-                     line.find(single_quote, found) != std::string::npos)
-            )) {
-
-                found = line.find(comment, found + 1);
-                continue;
-            }
-
-            line = line.substr(0, found);
-            break;
-        }
-        if (line.empty())
-            continue;
-        status = prepare_and_execute(line, environ_, builtins);
-
-    }
-    file.close();
-    return 0;
-
-}
-
 
 int execute_file_builtin(std::vector<std::string> &args, custom_environ &environ_, int &status,
                          builtins_map &builtins) {
@@ -244,6 +148,7 @@ int execute_file_builtin(std::vector<std::string> &args, custom_environ &environ
     }
     return E2BIG;  // argument list too big = 7
 }
+
 
 
 builtins_map get_function(std::string &current_path, custom_environ &environ_, int &status) {

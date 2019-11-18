@@ -27,13 +27,6 @@ int mexport(std::vector<std::string> &command, custom_environ &environ_);
 
 int mpwd(std::vector<std::string> &args, const std::string &current_path);
 
-int execute_file(std::string &filename, custom_environ &environ_, int &status, builtins_map &builtins);
-
-int prepare_and_execute(std::string string_args, custom_environ &environ_, builtins_map &builtins, int pipe_out = -1,
-                        int pipe_in = 1);
-
-std::string magic_transform(std::string input, int &status, custom_environ &environ_, builtins_map &builtins);
-
 builtins_map
 get_function(std::string &current_path, custom_environ &environ_, int &status);
 

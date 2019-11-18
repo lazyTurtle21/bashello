@@ -8,7 +8,7 @@ find_package(Boost REQUIRED COMPONENTS filesystem  program_options regex)
 
 add_executable(myshell src/main.cpp src/wildcards.cpp inc/wildcards.hpp src/builtins.cpp inc/builtins.hpp
         inc/parse_utils.hpp src/parse_utils.cpp src/custom_environ.cpp inc/custom_environ.hpp
-        src/buf_containers.cpp inc/buf_containers.hpp src/command.cpp inc/command.hpp)
+        src/buf_containers.cpp inc/buf_containers.hpp src/command.cpp inc/command.hpp src/execution.cpp inc/execution.hpp)
 target_link_libraries(myshell ${Boost_LIBRARIES} ${Readline_LIBRARY})
 
 include_directories(${Readline_INCLUDE_DIR})

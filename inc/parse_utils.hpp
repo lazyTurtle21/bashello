@@ -15,7 +15,7 @@ void replace_vars(std::string& command);
 std::vector<std::string> get_script_vars(std::string& command);
 void split(std::string &source, std::vector<std::string> &destination);
 
-void replace_wildcard(std::vector<std::string>& command, std::string& full_path,  std::string& dir);
+void replace_wildcard(std::vector<std::string>& command);
 
 int parse_variables(std::vector<std::string>& command, custom_environ &environ_);
 std::string remove_leading_ending_spaces(const std::string& str);
