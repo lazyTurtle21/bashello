@@ -180,20 +180,16 @@ int execute_file(std::string &filename, custom_environ &environ_, int &status, b
         std::size_t found = line.find(comment);
 
         while (found != std::string::npos) {
-            std::cout << line << " " << found << '\n';
-            substr = line.substr(found);
-            if (found == 0){
-                line = "";
-            }
-
-            else if ((
-                    (line[found - 1] == double_quote != std::string::npos && line.find(double_quote, found) != std::string::npos)
+            substr = line.substr(0, found);
+            if ((
+                    (substr.find(double_quote) != std::string::npos &&
+                     line.find(double_quote, found) != std::string::npos)
                     ||
-                    (line[found - 1] == single_quote && line.find(single_quote, found) != std::string::npos)
-            ))
-            {
+                    (substr.find(single_quote) != std::string::npos &&
+                     line.find(single_quote, found) != std::string::npos)
+            )) {
 
-                found = line.find(comment, found);
+                found = line.find(comment, found + 1);
                 continue;
             }
 
@@ -202,50 +198,48 @@ int execute_file(std::string &filename, custom_environ &environ_, int &status, b
         }
         if (line.empty())
             continue;
-        std::cout << "\nHi!!!" << line << '\n';
         status = prepare_and_execute(line, environ_, builtins);
 
-        }
-        file.close();
+    }
+    file.close();
+    return 0;
+
+}
+
+
+int execute_file_builtin(std::vector<std::string> &args, custom_environ &environ_, int &status,
+                         builtins_map &builtins) {
+    if (args.size() == 1) return 0;
+    std::stringstream message;
+    message << HELP_COLOR << ". <filename>\n\tExecute file in current interpreter.\n" << RESET;
+    int help = help_opts(args, message.str());
+    if (help == 1) return 0;
+
+    std::string filename;
+    if (args.size() == 1) {
         return 0;
-
-
     }
-
-
-    int execute_file_builtin(std::vector<std::string> &args, custom_environ &environ_, int &status,
-                             builtins_map &builtins) {
-        if (args.size() == 1) return 0;
-        std::stringstream message;
-        message << HELP_COLOR << ". <filename>\n\tExecute file in current interpreter.\n" << RESET;
-        int help = help_opts(args, message.str());
-        if (help == 1) return 0;
-
-        std::string filename;
-        if (args.size() == 1) {
-            return 0;
-        }
-        if (args.size() == 2) {
-            execute_file(args[1], environ_, status, builtins);
-            return status;
-        }
-        return E2BIG;  // argument list too big = 7
+    if (args.size() == 2) {
+        execute_file(args[1], environ_, status, builtins);
+        return status;
     }
+    return E2BIG;  // argument list too big = 7
+}
 
 
-    builtins_map get_function(std::string &current_path, custom_environ &environ_, int &status) {
-        builtins_map map;
-        map["mcd"] = [&current_path](std::vector<std::string> command) { return mcd(command, current_path); };
-        map["mexport"] = [&environ_](std::vector<std::string> command) { return mexport(command, environ_); };
-        map["mpwd"] = [&current_path](std::vector<std::string> command) { return mpwd(command, current_path); };
-        map["mexit"] = [&status](std::vector<std::string> command) { return mexit(command, status); };
-        map["merrno"] = [&status](std::vector<std::string> command) { return merrno(command, status); };
-        map["mecho"] = &mecho;
-        map["."] = [&status, &environ_, &map]
-                (std::vector<std::string> command) { return execute_file_builtin(command, environ_, status, map); };
+builtins_map get_function(std::string &current_path, custom_environ &environ_, int &status) {
+    builtins_map map;
+    map["mcd"] = [&current_path](std::vector<std::string> command) { return mcd(command, current_path); };
+    map["mexport"] = [&environ_](std::vector<std::string> command) { return mexport(command, environ_); };
+    map["mpwd"] = [&current_path](std::vector<std::string> command) { return mpwd(command, current_path); };
+    map["mexit"] = [&status](std::vector<std::string> command) { return mexit(command, status); };
+    map["merrno"] = [&status](std::vector<std::string> command) { return merrno(command, status); };
+    map["mecho"] = &mecho;
+    map["."] = [&status, &environ_, &map]
+            (std::vector<std::string> command) { return execute_file_builtin(command, environ_, status, map); };
 
-        return map;
-    }
+    return map;
+}
 
 
 
