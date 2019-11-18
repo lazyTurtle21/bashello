@@ -18,7 +18,7 @@ void replace_vars(std::string&command) {
                 if (j == command.size() - 1) command_vars.push_back(var);
             }
         } else {
-            if (command[j] == '$') write_var = true;
+            if (command[j] == '$' && ((j == command.size() - 1) || (command[j+1] != '('))) write_var = true;
         }
     }
     for (auto &v: command_vars) {

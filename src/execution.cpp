@@ -42,13 +42,15 @@ int prepare_and_execute(std::string string_args, custom_environ &environ_, built
     for (auto &c: pipe_args) {
         std::vector<std::string> to_redirect;
         replace_vars(c);
-        std::cout << c.size();
 
         scripts = get_script_vars(c);
-        std::cout << scripts.size();
+        std::cout << scripts.size() << '\n';
+
         for (auto &s: scripts) {
-            std::cout << "'" << s  <<"'" << '\n';
-            boost::replace_first(c, "$(" + s + ")", magic_transform(s, status, environ_, builtins));
+//            std::cout << "'" << s  <<"'" << '\n';
+            auto dd = magic_transform(s, status, environ_, builtins);
+//            std::cout << dd << '\n';
+            boost::replace_first(c, "$(" + s + ")", dd);
         }
         if (c.find('<') != std::string::npos || c.find('>') != std::string::npos) {
             redirect_files = get_files_for_redirect(c);
