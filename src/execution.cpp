@@ -13,7 +13,7 @@ int pipe_exec(std::vector<command> &commands, custom_environ &environ_, builtins
         commands[i + 1].set_stdin(p[0]);
         commands[i].execute_command(builtins, p[0]);
         close(p[1]);
-   }
+    }
     return commands.back().execute_command(builtins);
 }
 
@@ -21,7 +21,7 @@ std::string magic_transform(std::string input, int &status, custom_environ &envi
     int p[2];
     while (pipe(p) == -1) {}
     status = prepare_and_execute(std::move(input), environ_, builtins, p[1], p[0]);
-    char inbuf[10000];
+    char inbuf[10000] = "\0";
     read(p[0], inbuf, 10000);
     close(p[0]);
     close(p[1]);
@@ -31,7 +31,6 @@ std::string magic_transform(std::string input, int &status, custom_environ &envi
 
 int prepare_and_execute(std::string string_args, custom_environ &environ_, builtins_map &builtins, int pipe_out,
                         int pipe_in) {
-
     std::vector<std::string> pipe_args, scripts, default_desc{"", "", ""};
     std::vector<command> commands;
     boost::split(pipe_args, string_args, boost::is_any_of("|"));
@@ -125,5 +124,3 @@ int execute_file(std::string &filename, custom_environ &environ_, int &status, b
     return 0;
 
 }
-
-

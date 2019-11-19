@@ -32,11 +32,6 @@ int main(int argc, char *argv[], char *envp[]) {
 
     builtins_map builtins = get_function(current_path, environ_, status);
 
-
-//    std::string input = "ls -l";
-//    std::string output = magic_transform(input, status, environ_, builtins);
-//    std::cout << output;
-
     if(argc == 2){
         std::string file{argv[1]};
         status = execute_file(file, environ_, status, builtins);

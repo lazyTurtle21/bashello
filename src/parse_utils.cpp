@@ -1,7 +1,6 @@
 #include "../inc/parse_utils.hpp"
 #include "../inc/builtins.hpp"
 
-
 void replace_vars(std::string&command) {
     std::vector<std::string> command_vars;
     std::string var;
@@ -91,17 +90,17 @@ replace_wildcard(std::vector<std::string> &command) {
 int parse_variables(std::vector<std::string> &command, custom_environ &environ_) {
     int res = 0;
     std::string name, value;
+    if (command.empty())
+        return 0;
+
     size_t found = command[0].find('=');
     if (found == std::string::npos)
         return 0;
-    if (command.empty())
-        return 0;
     name = command[0].substr(0, found);
     value = command[0].substr(found + 1) + "\n";
-    if (command.size() > 2)
+    if (command.size() > 1)
     {
-        for (auto i = 1; i < command.size(); ++i) {
-//            std::cout<< value;
+        for (auto i = 1; i < command.size(); i++) {
             value += command[i] + '\n';
         }}
     res = setenv(name.c_str(), value.c_str(), 1);

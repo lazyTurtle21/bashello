@@ -28,7 +28,7 @@ command::command(std::vector<std::string> args_, std::vector<std::string> &desc,
         stdout_ = background, stderr_ = background;
     }
     if (!desc[0].empty())
-        stdin_ = open(desc[0].c_str(), O_TRUNC | O_RDWR, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+        stdin_ = open(desc[0].c_str(),  O_RDWR | O_CREAT);
     if (!desc[1].empty() && desc[1] != "2")
         stdout_ = open(desc[1].c_str(), O_TRUNC | O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     if (!desc[2].empty() && desc[2] != "1")

@@ -13,8 +13,8 @@ target_link_libraries(myshell ${Boost_LIBRARIES} ${Readline_LIBRARY})
 
 include_directories(${Readline_INCLUDE_DIR})
 
-#add_executable(mycat src/mycat.cpp)
-#target_link_libraries(mycat ${Boost_LIBRARIES})
-#
-#add_executable(myls src/myls.cpp inc/myfile.hpp src/myfile.cpp)
-#target_link_libraries(myls ${Boost_LIBRARIES})
+add_executable(mycat src/mycat.cpp)
+target_link_libraries(mycat ${Boost_LIBRARIES})
+
+add_executable(myls src/myls.cpp inc/myfile.hpp src/myfile.cpp)
+target_link_libraries(myls ${Boost_LIBRARIES})
